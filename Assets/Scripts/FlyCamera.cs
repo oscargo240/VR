@@ -30,6 +30,7 @@ public class FlyCamera : MonoBehaviour
     private float sinceUpdate = 0.2f;
     private bool activeCircle = false;
     public GameObject RedCircle; // Item to be spawned
+    public float CircleDistance; // Distance from the camera to the circle
 
     void Update()
     {
@@ -49,7 +50,7 @@ public class FlyCamera : MonoBehaviour
                 item.GetComponent<Rigidbody>().angularVelocity = Vector3.zero;
                 // The CameraParent becomes the parent of the ball too.
                 item.transform.SetParent(transform);
-                if (Input.GetKey("z"))
+                if (Input.GetKey("z")) //Input.anyKey
                 {
                     // Throw
                     var cam = Camera.main;
@@ -88,8 +89,8 @@ public class FlyCamera : MonoBehaviour
             if (activeCircle == false)
             {
                 //dibujar la pelota
-                Vector3 pos = Camera.main.transform.position + cameraDirection;
-                pos.y = 0;
+                Vector3 pos = Camera.main.transform.position + cameraDirection * CircleDistance;
+                pos.y = -0.1751291f;
                 Instantiate(RedCircle, pos, Quaternion.identity);
                 activeCircle = true;
             }
@@ -100,8 +101,8 @@ public class FlyCamera : MonoBehaviour
                 Destroy(redCircleToDestroy);
                 activeCircle = false;
                 Vector3 newPosition = transform.position;
-                newPosition.x += cameraDirection.x;
-                newPosition.z += cameraDirection.z;
+                newPosition.x = redCircleToDestroy.transform.position.x;
+                newPosition.z = redCircleToDestroy.transform.position.z;
                 transform.position = newPosition;
             }
         }
@@ -109,13 +110,14 @@ public class FlyCamera : MonoBehaviour
         if (activeCircle)
         {
             GameObject redCircleToDestroy = GameObject.FindGameObjectWithTag("RedCircle");
-            Vector3 pos = Camera.main.transform.position + cameraDirection;
-            pos.y = 0;
+            Vector3 pos = Camera.main.transform.position + cameraDirection * CircleDistance;
+            pos.y = -0.1751291f;
             redCircleToDestroy.transform.position = pos;
         }
-        
+
 
         //movement
+        
         lastMouse = Input.mousePosition - lastMouse;
         lastMouse = new Vector3(-lastMouse.y * camSens, lastMouse.x * camSens, 0);
         lastMouse = new Vector3(transform.eulerAngles.x + lastMouse.x, transform.eulerAngles.y + lastMouse.y, 0);
@@ -161,6 +163,29 @@ public class FlyCamera : MonoBehaviour
                 transform.position = newPosition;
             }
         }
+        /*
+
+        if (Input.GetAxis("Vertical") > 0)
+        {
+            transform.position += transform.forward * Time.deltaTime * mainSpeed;
+        }
+        else if (Input.GetAxis("Vertical") < 0)
+        {
+            transform.position -= transform.forward * Time.deltaTime * mainSpeed;
+        }
+        else if (Input.GetAxis("Horizontal") < 0)
+        {
+            transform.position -= transform.right * Time.deltaTime * mainSpeed;
+        }
+        else if (Input.GetAxis("Horizontal") > 0)
+        {
+            transform.position += transform.right * Time.deltaTime * mainSpeed;
+        }
+        transform.position = new Vector3(
+        transform.position.x,
+        1.0f,
+        transform.position.z);
+        */
     }
 
     void OnCollisionEnter(Collision obj)
